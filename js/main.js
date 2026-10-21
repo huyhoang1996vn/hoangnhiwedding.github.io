@@ -85,14 +85,19 @@
     animate();
   }
 
+  let startBgMusic = null;
+
   function initIntroVideo() {
+    const section = document.getElementById('intro-section');
     const video = document.getElementById('intro-video');
     const introText = document.getElementById('intro-text');
-    if (!video) return;
+    const playHint = document.getElementById('intro-play-hint');
+    if (!video || !section) return;
 
     video.muted = true;
     video.loop = false;
 
+    let started = false;
     let introTextShown = false;
 
     function showIntroText() {
@@ -155,9 +160,16 @@
       }, 600);
     }
 
-    const play = () => video.play().catch(() => {});
-    play();
-    document.addEventListener('click', play, { once: true });
+    function startExperience() {
+      if (started) return;
+      started = true;
+      section.classList.add('started');
+      playHint?.classList.add('is-hidden');
+      video.play().catch(() => {});
+      startBgMusic?.();
+    }
+
+    section.addEventListener('click', startExperience);
   }
 
   function buildCalendarUrl(event) {
@@ -232,6 +244,43 @@
     }, 4000);
   }
 
+  function initBackgroundMusic() {
+    const audio = document.getElementById('bg-music');
+    const btn = document.getElementById('music-toggle');
+    if (!audio || !btn) return;
+
+    let userMuted = false;
+
+    function updateButton() {
+      btn.classList.toggle('is-muted', userMuted);
+      btn.setAttribute('aria-pressed', String(!userMuted));
+      btn.setAttribute(
+        'aria-label',
+        userMuted ? 'Play background music' : 'Mute background music'
+      );
+    }
+
+    startBgMusic = function () {
+      if (userMuted) return;
+      audio.play().catch(() => {});
+    };
+
+    updateButton();
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (userMuted) {
+        userMuted = false;
+        updateButton();
+        startBgMusic();
+      } else {
+        userMuted = true;
+        audio.pause();
+        updateButton();
+      }
+    });
+  }
+
   function initRsvpForm() {
     const form = document.getElementById('rsvp-form');
     if (!form) return;
@@ -261,7 +310,8 @@
   initRevealAnimations();
   initTimelinePearl();
   initGarlandSway();
-  initIntroVideo();
+  initBackgroundMusic();
+  initIntroVideo(); // uses startBgMusic from initBackgroundMusic
   initActionLinks();
   initRsvpForm();
 })();
