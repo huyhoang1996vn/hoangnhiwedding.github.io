@@ -241,3 +241,88 @@
     transparent 12px
   );
 }
+
+/* Centered phone-column invitation shell */
+body {
+  background-color: hsl(var(--ivory));
+}
+
+.site-shell {
+  width: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+  overflow-x: hidden;
+  position: relative;
+  box-shadow: 0 0 40px hsl(30 24% 20% / 0.06);
+}
+
+@media (max-width: 560px) {
+  .site-shell {
+    box-shadow: none;
+  }
+}
+
+/* Countdown: fit three medallions inside the phone column */
+#countdown .relative.aspect-square {
+  width: min(28vw, 140px);
+  max-width: 140px;
+}
+
+@media (min-width: 480px) {
+  #countdown .relative.aspect-square {
+    width: min(26vw, 160px);
+    max-width: 160px;
+  }
+}
+
+#countdown .flex.w-full.items-start.justify-center > div {
+  margin-inline: -0.25rem;
+}
+
+@media (min-width: 480px) {
+  #countdown .flex.w-full.items-start.justify-center > div {
+    margin-inline: -0.5rem;
+  }
+}
+
+#countdown {
+  min-height: auto;
+  padding-bottom: 8rem;
+  padding-top: 4rem;
+}
+
+@media (min-width: 768px) {
+  #countdown {
+    padding-bottom: 10rem;
+    padding-top: 5rem;
+  }
+}
+
+/* Ceremony garland: keep vines inside the invitation column */
+#wedding-events .absolute.top-full {
+  width: 100%;
+  max-width: 100%;
+}
+
+#garland {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* RSVP: keep decorative topiary and form inside shell */
+#rsvp {
+  overflow-x: hidden;
+}
+
+#rsvp form input,
+#rsvp form textarea,
+#rsvp form button[type='submit'] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 390px) {
+  #rsvp .max-w-xl {
+    padding-inline: 0.25rem;
+  }
+}
