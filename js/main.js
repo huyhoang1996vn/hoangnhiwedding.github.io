@@ -1,13 +1,14 @@
 (function () {
   'use strict';
 
-  const WEDDING_DATE = new Date('2027-01-09T17:00:00+07:00');
+  const RSVP_API_URL = 'http://127.0.0.1:8000/rsvp';
+  const WEDDING_DATE = new Date('2026-12-01T17:00:00+07:00');
   const CEREMONY = {
     title: 'Hoang & Nhi Wedding',
-    location: 'Château de Belvent, Gevrey-Chambertin, France',
-    mapsUrl: 'https://maps.google.com/?q=Château+de+Belvent+Gevrey-Chambertin',
-    start: '20270109T150000',
-    end: '20270109T230000',
+    location: 'Da Nang Mikazuki Japanese Resorts & Spa, Da Nang, Vietnam',
+    mapsUrl: 'https://maps.app.goo.gl/o9Bp73GJnEgeGNbu8',
+    start: '20261201T150000',
+    end: '20261201T230000',
   };
   const RECOVERY = {
     title: 'Hoang & Nhi Recovery Day',
@@ -285,26 +286,53 @@
     const form = document.getElementById('rsvp-form');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const honeypot = form.querySelector('#website');
-      if (honeypot && honeypot.value.trim()) return;
-
       const data = new FormData(form);
-      const payload = Object.fromEntries(data.entries());
+      const fullName = String(data.get('fullName') || '').trim();
+      const attendees = Number(data.get('attendees'));
+      const message = String(data.get('message') || '').trim();
+      const website = String(data.get('website') || '');
 
-      if (!payload.fullName || !payload.attending) {
+      if (!fullName || !Number.isInteger(attendees) || attendees < 1 || attendees > 20) {
         showToast('Please fill in all required fields.', 'error');
         return;
       }
 
-      console.log('RSVP submitted:', payload);
-      showToast('Thank you! Your RSVP has been received.', 'success');
-      form.reset();
+      const button = form.querySelector('button[type="submit"]');
+      if (button) button.disabled = true;
+
+      try {
+        const response = await fetch(RSVP_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName,
+            attendees,
+            message: message || null,
+            website,
+          }),
+        });
+
+        if (!response.ok) {
+          showToast('Something went wrong. Please try again.', 'error');
+          return;
+        }
+
+        showToast('Thank you! Your RSVP has been received.', 'success');
+        form.reset();
+        const attendeesInput = form.querySelector('#attendees');
+        if (attendeesInput) attendeesInput.value = '1';
+      } catch (err) {
+        showToast('Something went wrong. Please try again.', 'error');
+      } finally {
+        if (button) button.disabled = false;
+      }
     });
   }
 
+  initRsvpForm();
   updateCountdown();
   setInterval(updateCountdown, 1000);
   initRevealAnimations();
@@ -313,5 +341,4 @@
   initBackgroundMusic();
   initIntroVideo(); // uses startBgMusic from initBackgroundMusic
   initActionLinks();
-  initRsvpForm();
 })();
