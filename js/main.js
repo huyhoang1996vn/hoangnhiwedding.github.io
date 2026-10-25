@@ -93,7 +93,60 @@
     const video = document.getElementById('intro-video');
     const introText = document.getElementById('intro-text');
     const playHint = document.getElementById('intro-play-hint');
+    const poster = document.getElementById('intro-poster');
     if (!video || !section) return;
+
+    let posterHidden = false;
+    let posterCanvas = null;
+    let posterCtx = null;
+
+    function hidePoster() {
+      if (posterHidden || !poster) return;
+      posterHidden = true;
+      poster.classList.add('is-hidden');
+    }
+
+    function presentedFrameIsBlank() {
+      if (!video.videoWidth) return true;
+      if (!posterCanvas) {
+        posterCanvas = document.createElement('canvas');
+        posterCanvas.width = 4;
+        posterCanvas.height = 4;
+        posterCtx = posterCanvas.getContext('2d', { willReadFrequently: true });
+      }
+      try {
+        posterCtx.drawImage(video, 0, 0, 4, 4);
+        const pixel = posterCtx.getImageData(0, 2, 1, 1).data;
+        const nearWhite = pixel[0] > 220 && pixel[1] > 220 && pixel[2] > 210;
+        const nearBlack = pixel[0] < 16 && pixel[1] < 16 && pixel[2] < 16;
+        return pixel[3] < 16 || nearWhite || nearBlack;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function holdPosterUntilPicture() {
+      const startedAt = performance.now();
+
+      const tick = () => {
+        if (posterHidden) return;
+        const elapsed = performance.now() - startedAt;
+        const hasPicture = video.currentTime > 0.04 && !presentedFrameIsBlank();
+        if (hasPicture || elapsed > 8000) {
+          video.removeEventListener('timeupdate', tick);
+          hidePoster();
+        }
+      };
+
+      video.addEventListener('timeupdate', tick);
+      if (typeof video.requestVideoFrameCallback === 'function') {
+        const onFrame = () => {
+          tick();
+          if (!posterHidden) video.requestVideoFrameCallback(onFrame);
+        };
+        video.requestVideoFrameCallback(onFrame);
+      }
+    }
 
     video.muted = true;
     video.loop = false;
@@ -292,6 +345,7 @@
       started = true;
       section.classList.add('started');
       playHint?.classList.add('is-hidden');
+      if (poster) holdPosterUntilPicture();
       video.play().catch(() => {});
       startBgMusic?.();
     }

@@ -212,6 +212,40 @@
   cursor: default;
 }
 
+/* Phones clear the video poster on play() before the first frame is painted.
+   The section fill is ivory, so that gap flashes white. */
+#intro-section {
+  background-color: #7f8b74;
+  background-image: url('../assets/intro-doors.png');
+  background-size: cover;
+  background-position: center;
+}
+
+#intro-video,
+#intro-poster {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+}
+
+#intro-video {
+  background: url('../assets/intro-doors.png') center / cover no-repeat;
+}
+
+#intro-poster {
+  z-index: 2;
+}
+
+#intro-poster.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.intro-text {
+  z-index: 3;
+}
+
 .intro-play-hint {
   position: absolute;
   bottom: 2.5rem;

@@ -48,10 +48,17 @@
         src="assets/intro-doors-open.mp4"
         poster="assets/intro-doors.png"
         playsinline
+        webkit-playsinline
         muted
         preload="auto"
-        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 opacity-100"
+        class="absolute inset-0 h-full w-full object-cover"
       ></video>
+      <img
+        id="intro-poster"
+        src="assets/intro-doors.png"
+        alt=""
+        class="intro-poster pointer-events-none absolute inset-0 h-full w-full object-cover"
+      >
       <p id="intro-play-hint" class="intro-play-hint section-eyebrow">Tap to open</p>
       <div id="intro-text" class="intro-text absolute inset-0 flex flex-col items-center text-center px-8 pt-[26vh] hero-overlay-text">
         <p class="intro-text-line font-script text-[2rem] sm:text-[3rem] md:text-[3.6rem] leading-[1.08] whitespace-pre-line">Hoang&nbsp;
