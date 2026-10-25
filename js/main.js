@@ -11,11 +11,11 @@
     end: '20261201T230000',
   };
   const RECOVERY = {
-    title: 'Hoang & Nhi Recovery Day',
-    location: 'Le Comptoir des Halles, 4 Rue Monge, Beaune, France',
-    mapsUrl: 'https://maps.google.com/?q=Le+Comptoir+des+Halles+Beaune',
-    start: '20270613T120000',
-    end: '20270613T180000',
+    title: 'Hoang & Nhi Wedding',
+    location: 'Da Nang Mikazuki Japanese Resorts & Spa, Da Nang, Vietnam',
+    mapsUrl: 'https://maps.app.goo.gl/fv3Djuvnqcbd2Cs29',
+    start: '20261201T150000',
+    end: '20261201T230000',
   };
 
   function pad(n) {
