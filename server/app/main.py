@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
@@ -8,6 +9,9 @@ from app.config import settings
 from app.database import Base, engine, get_db
 from app.models import Rsvp
 from app.schemas import RsvpCreate, RsvpGuest, RsvpOut
+from app.sheets import append_rsvp
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -43,6 +47,12 @@ def create_rsvp(payload: RsvpCreate, db: Session = Depends(get_db)) -> RsvpOut:
     db.add(row)
     db.commit()
     db.refresh(row)
+
+    try:
+        append_rsvp(row)
+    except Exception:
+        logger.exception("Google Sheet append failed for rsvp %s", row.id)
+
     return RsvpOut(id=row.id)
 
 

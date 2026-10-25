@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const RSVP_API_URL = 'http://127.0.0.1:8000/rsvp';
+  const RSVP_API_URL = '/rsvp';
   const WEDDING_DATE = new Date('2026-12-01T17:00:00+07:00');
   const CEREMONY = {
     title: 'Hoang & Nhi Wedding',

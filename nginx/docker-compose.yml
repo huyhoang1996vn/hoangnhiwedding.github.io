@@ -1,0 +1,12 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: nginx/Dockerfile
+    image: hoangnhi-nginx
+    container_name: hoangnhi-nginx
+    ports:
+      - "8090:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
