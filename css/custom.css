@@ -35,6 +35,17 @@
   transform: scale(1);
 }
 
+/* Keep Our Story icons inline (bundle forces svg { display: block }) */
+#our-story .story-icon {
+  display: inline-block;
+  width: 0.95em;
+  height: 0.95em;
+  margin-left: 0.2em;
+  vertical-align: -0.12em;
+  color: hsl(var(--dusty-rose));
+  flex-shrink: 0;
+}
+
 .hero-overlay-text {
   mix-blend-mode: multiply;
 }

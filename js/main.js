@@ -108,7 +108,8 @@
     }
 
     video.addEventListener('timeupdate', () => {
-      if (video.duration && video.currentTime >= video.duration - 3) {
+      // Time to show intro text
+      if (video.duration && video.currentTime >= video.duration - 4) {
         showIntroText();
       }
     });
@@ -119,15 +120,38 @@
     });
 
     function slowScrollToEnd() {
+      const SECTION_PAUSE_MS = 2000;
+      const SECTION_TOP_THRESHOLD = 48;
+      const SECTION_SELECTORS = [
+        '#hero-invitation',
+        '#countdown',
+        // '#welcome',
+        '#wedding-events',
+        '#dress-code',
+        '#our-story',
+        '#day-program',
+        '#recovery-day',
+        '#gifts',
+        '#rsvp',
+        'footer',
+      ];
+
       setTimeout(() => {
         const html = document.documentElement;
         const savedScrollBehavior = html.style.scrollBehavior;
         html.style.scrollBehavior = 'auto';
 
-        const duration = 100000;
-        const startTime = performance.now();
-        let lastTime = startTime;
+        const sections = SECTION_SELECTORS.map((sel) =>
+          document.querySelector(sel)
+        ).filter(Boolean);
+        const paused = new Set();
+        // Duration of the scroll
+        const duration = 70000;
+        let crawlElapsed = 0;
+        let lastTime = performance.now();
         let rafId = null;
+        let pausing = false;
+        let pauseUntil = 0;
 
         function stopScroll() {
           if (rafId) cancelAnimationFrame(rafId);
@@ -136,22 +160,50 @@
           window.removeEventListener('touchstart', stopScroll);
         }
 
+        function tryPauseAtSection() {
+          for (const el of sections) {
+            if (paused.has(el)) continue;
+            if (el.getBoundingClientRect().top <= SECTION_TOP_THRESHOLD) {
+              paused.add(el);
+              pausing = true;
+              pauseUntil = performance.now() + SECTION_PAUSE_MS;
+              return;
+            }
+          }
+        }
+
         function step(now) {
+          if (pausing) {
+            if (now < pauseUntil) {
+              rafId = requestAnimationFrame(step);
+              return;
+            }
+            pausing = false;
+            lastTime = now;
+          }
+
           const maxY = html.scrollHeight - window.innerHeight;
-          const elapsed = now - startTime;
-          const timeLeft = Math.max(duration - elapsed, 1);
           const delta = Math.min((now - lastTime) / 1000, 0.05);
           lastTime = now;
+          crawlElapsed += delta * 1000;
 
-          if (elapsed >= duration || window.scrollY >= maxY - 1) {
+          if (crawlElapsed >= duration || window.scrollY >= maxY - 1) {
             window.scrollTo(0, maxY);
+            tryPauseAtSection();
+            if (pausing && now < pauseUntil) {
+              rafId = requestAnimationFrame(step);
+              return;
+            }
             stopScroll();
             return;
           }
 
+          const timeLeft = Math.max(duration - crawlElapsed, 1);
           const remaining = maxY - window.scrollY;
           const stepSize = remaining * (delta / (timeLeft / 1000));
           window.scrollTo(0, Math.min(window.scrollY + stepSize, maxY));
+
+          tryPauseAtSection();
           rafId = requestAnimationFrame(step);
         }
 
