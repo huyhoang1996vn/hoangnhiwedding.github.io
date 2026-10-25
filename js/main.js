@@ -121,7 +121,6 @@
 
     function slowScrollToEnd() {
       const SECTION_PAUSE_MS = 2000;
-      const SECTION_TOP_THRESHOLD = 48;
       const SECTION_SELECTORS = [
         '#hero-invitation',
         '#countdown',
@@ -138,20 +137,85 @@
 
       setTimeout(() => {
         const html = document.documentElement;
+        const body = document.body;
         const savedScrollBehavior = html.style.scrollBehavior;
         html.style.scrollBehavior = 'auto';
 
-        const sections = SECTION_SELECTORS.map((sel) =>
-          document.querySelector(sel)
-        ).filter(Boolean);
+        // Lock scroll metrics once. On phones, browser chrome show/hide
+        // changes innerHeight mid-scroll and makes maxY jump (shake).
+        const viewportH =
+          (window.visualViewport && window.visualViewport.height) ||
+          html.clientHeight ||
+          window.innerHeight;
+        const maxY = Math.max(0, Math.floor(html.scrollHeight - viewportH));
+        const startY = window.scrollY || html.scrollTop || 0;
+        const distance = Math.max(0, maxY - startY);
+
+        function currentScrollY() {
+          return window.scrollY || html.scrollTop || 0;
+        }
+
+        function currentMaxY() {
+          const vh =
+            (window.visualViewport && window.visualViewport.height) ||
+            html.clientHeight ||
+            window.innerHeight;
+          return Math.max(0, Math.floor(html.scrollHeight - vh));
+        }
+
+        function visibleOffset() {
+          return (window.visualViewport && window.visualViewport.offsetTop) || 0;
+        }
+
+        function documentY(node) {
+          return node.getBoundingClientRect().top + currentScrollY();
+        }
+
+        // Only these have large top padding / divider art; others snap to section top.
+        const CONTENT_SNAP_IDS = new Set([
+          'our-story',
+          'day-program',
+          'recovery-day',
+          'gifts',
+          'rsvp',
+        ]);
+
+        function snapYForSection(el) {
+          if (!CONTENT_SNAP_IDS.has(el.id)) {
+            return Math.round(documentY(el) - visibleOffset());
+          }
+
+          const heading = el.querySelector('h2');
+          const firstImg = el.querySelector('img');
+          let anchor = heading;
+          if ((el.id === 'gifts' || el.id === 'rsvp') && firstImg) {
+            anchor = firstImg;
+          }
+          if (!anchor) {
+            const pad = parseFloat(getComputedStyle(el).paddingTop) || 0;
+            return Math.round(documentY(el) + pad - visibleOffset());
+          }
+          return Math.round(documentY(anchor) - visibleOffset());
+        }
+
+        const sectionTargets = SECTION_SELECTORS.map((sel) => {
+          const el = document.querySelector(sel);
+          if (!el) return null;
+          return { el, top: snapYForSection(el) };
+        }).filter(Boolean);
         const paused = new Set();
-        // Duration of the scroll
-        const duration = 70000;
+        sectionTargets.forEach((item) => {
+          if (item.top <= startY + 1) paused.add(item.el);
+        });
+
+        const duration = 60000;
         let crawlElapsed = 0;
         let lastTime = performance.now();
         let rafId = null;
         let pausing = false;
         let pauseUntil = 0;
+        let scrollPos = startY;
+        let lastApplied = -1;
 
         function stopScroll() {
           if (rafId) cancelAnimationFrame(rafId);
@@ -160,11 +224,23 @@
           window.removeEventListener('touchstart', stopScroll);
         }
 
+        function applyScroll(y) {
+          const top = Math.round(Math.min(Math.max(y, 0), Math.max(maxY, currentMaxY())));
+          scrollPos = top;
+          if (top === lastApplied) return;
+          lastApplied = top;
+          html.scrollTop = top;
+          if (body) body.scrollTop = top;
+          window.scrollTo(0, top);
+        }
+
         function tryPauseAtSection() {
-          for (const el of sections) {
-            if (paused.has(el)) continue;
-            if (el.getBoundingClientRect().top <= SECTION_TOP_THRESHOLD) {
-              paused.add(el);
+          for (const item of sectionTargets) {
+            if (paused.has(item.el)) continue;
+            item.top = snapYForSection(item.el);
+            if (scrollPos >= item.top) {
+              paused.add(item.el);
+              applyScroll(item.top);
               pausing = true;
               pauseUntil = performance.now() + SECTION_PAUSE_MS;
               return;
@@ -182,13 +258,12 @@
             lastTime = now;
           }
 
-          const maxY = html.scrollHeight - window.innerHeight;
-          const delta = Math.min((now - lastTime) / 1000, 0.05);
+          const deltaMs = Math.min(now - lastTime, 50);
           lastTime = now;
-          crawlElapsed += delta * 1000;
+          crawlElapsed += deltaMs;
 
-          if (crawlElapsed >= duration || window.scrollY >= maxY - 1) {
-            window.scrollTo(0, maxY);
+          if (crawlElapsed >= duration || scrollPos >= maxY - 0.5) {
+            applyScroll(maxY);
             tryPauseAtSection();
             if (pausing && now < pauseUntil) {
               rafId = requestAnimationFrame(step);
@@ -198,10 +273,9 @@
             return;
           }
 
-          const timeLeft = Math.max(duration - crawlElapsed, 1);
-          const remaining = maxY - window.scrollY;
-          const stepSize = remaining * (delta / (timeLeft / 1000));
-          window.scrollTo(0, Math.min(window.scrollY + stepSize, maxY));
+          // Constant-speed scroll from locked start/end (avoids remaining-distance jitter)
+          const t = crawlElapsed / duration;
+          applyScroll(startY + distance * t);
 
           tryPauseAtSection();
           rafId = requestAnimationFrame(step);
