@@ -359,6 +359,40 @@ body {
   overflow-x: hidden;
 }
 
+#rsvp #fullName,
+#rsvp #attendees,
+#rsvp #message {
+  width: 100%;
+  max-width: 100%;
+}
+
+#rsvp #message {
+  padding-right: 3.25rem;
+}
+
+#rsvp .rsvp-topiary {
+  position: absolute;
+  right: -1.5rem;
+  bottom: 0;
+  top: auto;
+  width: auto;
+  height: 10rem;
+  max-width: none;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  #rsvp #message {
+    padding-right: 4rem;
+  }
+
+  #rsvp .rsvp-topiary {
+    right: -3.7rem;
+    height: 17rem;
+  }
+}
+
 #rsvp form input,
 #rsvp form textarea,
 #rsvp form button[type='submit'] {
@@ -462,4 +496,28 @@ body {
   #rsvp .max-w-xl {
     padding-inline: 0.25rem;
   }
+}
+
+.invitee-names {
+  container-type: inline-size;
+}
+
+.invitee-name {
+  font-family: "Alex Brush", cursive;
+  font-weight: 400;
+  font-size: 3.4rem;
+  font-size: clamp(2.85rem, 18cqi, 4.6rem);
+  line-height: 1.15;
+  color: hsl(4 48% 36%);
+  overflow-wrap: break-word;
+}
+
+.invitee-and {
+  font-family: "Alex Brush", cursive;
+  font-weight: 400;
+  font-size: 2.25rem;
+  font-size: clamp(2rem, 10cqi, 2.6rem);
+  line-height: 0.85;
+  color: hsl(var(--dusty-rose));
+  padding: 0.2rem 0 0.05rem;
 }

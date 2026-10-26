@@ -2,20 +2,20 @@
   'use strict';
 
   const RSVP_API_URL = '/rsvp';
-  const WEDDING_DATE = new Date('2026-12-01T17:00:00+07:00');
+  const WEDDING_DATE = new Date('2027-01-09T16:00:00+07:00');
   const CEREMONY = {
     title: 'Hoang & Nhi Wedding',
     location: 'Da Nang Mikazuki Japanese Resorts & Spa, Da Nang, Vietnam',
     mapsUrl: 'https://maps.app.goo.gl/o9Bp73GJnEgeGNbu8',
-    start: '20261201T150000',
-    end: '20261201T230000',
+    start: '20270109T160000',
+    end: '20270109T230000',
   };
   const RECOVERY = {
     title: 'Hoang & Nhi Wedding',
     location: 'Da Nang Mikazuki Japanese Resorts & Spa, Da Nang, Vietnam',
     mapsUrl: 'https://maps.app.goo.gl/fv3Djuvnqcbd2Cs29',
-    start: '20261201T150000',
-    end: '20261201T230000',
+    start: '20270109T160000',
+    end: '20270109T230000',
   };
 
   function pad(n) {
@@ -462,6 +462,50 @@
     });
   }
 
+  function guestNameFromUrl() {
+    const raw = window.location.search.startsWith('?')
+      ? window.location.search.slice(1)
+      : '';
+    if (!raw) return '';
+    const token = raw.split('&')[0];
+    const value = token.includes('=') ? token.slice(token.indexOf('=') + 1) : token;
+    try {
+      return decodeURIComponent(value.replace(/\+/g, ' ')).trim();
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function inviteeNameParts(name) {
+    const parts = name.split(/\s+&\s+|\s+and\s+/i).map((part) => part.trim()).filter(Boolean);
+    return parts.length ? parts : [name];
+  }
+
+  function initInvitee() {
+    const name = guestNameFromUrl();
+    if (!name) return;
+
+    const fullName = document.getElementById('fullName');
+    if (fullName && !fullName.value) fullName.value = name.slice(0, 120);
+
+    const names = document.getElementById('invitee-names');
+    if (!names) return;
+
+    names.textContent = '';
+    inviteeNameParts(name).forEach((person, index) => {
+      if (index > 0) {
+        const and = document.createElement('p');
+        and.className = 'invitee-and';
+        and.textContent = 'and';
+        names.appendChild(and);
+      }
+      const heading = document.createElement('h3');
+      heading.className = 'invitee-name';
+      heading.textContent = person;
+      names.appendChild(heading);
+    });
+  }
+
   function initRsvpForm() {
     const form = document.getElementById('rsvp-form');
     if (!form) return;
@@ -512,6 +556,7 @@
     });
   }
 
+  initInvitee();
   initRsvpForm();
   updateCountdown();
   setInterval(updateCountdown, 1000);
