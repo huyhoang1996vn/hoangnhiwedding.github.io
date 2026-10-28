@@ -481,29 +481,33 @@
     return parts.length ? parts : [name];
   }
 
-  function initInvitee() {
-    const name = guestNameFromUrl();
-    if (!name) return;
-
-    const fullName = document.getElementById('fullName');
-    if (fullName && !fullName.value) fullName.value = name.slice(0, 120);
-
-    const names = document.getElementById('invitee-names');
-    if (!names) return;
-
-    names.textContent = '';
+  function renderInviteeNames(container, name) {
+    if (!container) return;
+    container.textContent = '';
     inviteeNameParts(name).forEach((person, index) => {
       if (index > 0) {
         const and = document.createElement('p');
         and.className = 'invitee-and';
         and.textContent = 'and';
-        names.appendChild(and);
+        container.appendChild(and);
       }
       const heading = document.createElement('h3');
       heading.className = 'invitee-name';
       heading.textContent = person;
-      names.appendChild(heading);
+      container.appendChild(heading);
     });
+  }
+
+  function initInvitee() {
+    const name = guestNameFromUrl();
+    if (!name) return;
+
+    renderInviteeNames(document.getElementById('hero-guest-name'), name);
+
+    const fullName = document.getElementById('fullName');
+    if (fullName && !fullName.value) fullName.value = name.slice(0, 120);
+
+    renderInviteeNames(document.getElementById('invitee-names'), name);
   }
 
   function initRsvpForm() {
