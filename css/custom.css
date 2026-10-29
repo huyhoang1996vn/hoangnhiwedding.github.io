@@ -235,7 +235,7 @@ body {
   /* Phones clear the video poster on play() before the first frame is painted.
      Section fill is ivory, so that gap flashes white — fill with poster image. */
   background-color: #7f8b74;
-  background-image: url('../assets/intro-doors.png');
+  background-image: url('../assets/intro-doors-poster.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -253,7 +253,7 @@ body {
 }
 
 #intro-video {
-  background: url('../assets/intro-doors.png') center / cover no-repeat;
+  background: url('../assets/intro-doors-poster.jpg') center / cover no-repeat;
 }
 
 #intro-poster {
@@ -513,6 +513,18 @@ body {
   width: 100%;
   margin-bottom: 100px;               /* <-- khoảng cách giữa lịch và countdown */
   padding-bottom: 4px;
+}
+
+/* Mobile: đẩy cụm Countdown + đồng hồ xuống 10px, thu lịch một chút. Desktop (>=480px) giữ nguyên. */
+@media (max-width: 479px) {
+  .countdown-clock {
+    transform: translateY(10px);
+  }
+
+  .countdown-calendar {
+    transform: translateY(15px) scale(0.92);
+    transform-origin: center top;
+  }
 }
 
 .cal-month {
