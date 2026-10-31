@@ -132,3 +132,76 @@ Front end always talks to same-origin `/rsvp` and `/rsvps` so CORS is not requir
 | API only | `server/docker-compose.yml` or `uvicorn app.main:app --reload --port 8000` |
 | Static + proxy | `nginx/` compose (expects API on host `:8000`) |
 | Guest list | Open `/guests/` with API (or proxy) available |
+
+---
+
+## Deploy on production
+
+**Live site:** [https://hoangnhiwedding.run.place](https://hoangnhiwedding.run.place)  
+**Invite with name:** `https://hoangnhiwedding.run.place/?Alex`  
+**Server path:** `/var/www/hoangnhiwedding`  
+**Nginx container:** `hoangnhi-nginx` (publishes host `:8090` → container `:80`)  
+**API:** FastAPI on host `:8000` (Postgres + Google Sheet sync)
+
+Nginx serves the static invitation and proxies same-origin `/rsvp`, `/rsvps`, `/health` to `host.docker.internal:8000`.
+
+### 0. One-time server setup
+
+1. Clone or sync the repo to `/var/www/hoangnhiwedding`.
+2. Put secrets on the server only (never commit):
+   - `server/.env` — `GOOGLE_SHEET_ID`, `GOOGLE_SHEET_TAB`, `GOOGLE_CREDENTIALS_FILE`, and production `CORS_ORIGINS` if needed
+   - `server/secrets/*.json` — Google service account key; share the Sheet with that account as Editor
+3. Start the API + Postgres:
+
+```bash
+cd /var/www/hoangnhiwedding/server
+docker compose up --build -d
+curl http://127.0.0.1:8000/health
+# expect: {"status":"ok"}
+```
+
+4. Point DNS for `hoangnhiwedding.run.place` at the server. Put a TLS reverse proxy (e.g. host nginx / Caddy) in front of `127.0.0.1:8090` if HTTPS terminates outside the `hoangnhi-nginx` container.
+5. Start the static site container (step 2 below).
+
+### 1. Ship code to the server
+
+From your machine (or pull on the server):
+
+```bash
+# example: pull latest on the server
+cd /var/www/hoangnhiwedding
+git pull
+```
+
+Or copy changed files (`index.html`, `css/`, `js/`, `assets/`, `guests/`, `nginx/`) into `/var/www/hoangnhiwedding`.
+
+### 2. Redeploy the static site (invitation)
+
+Whenever front-end files change (`index.html`, `css/`, `js/`, `assets/`, `guests/`):
+
+```bash
+cd /var/www/hoangnhiwedding/nginx
+docker compose build
+docker rm -f hoangnhi-nginx
+docker compose up -d
+```
+
+The image copies static files at **build** time, so a rebuild is required after every content change.
+
+### 3. Redeploy the RSVP API (only when `server/` changes)
+
+```bash
+cd /var/www/hoangnhiwedding/server
+docker compose up --build -d
+curl http://127.0.0.1:8000/health
+```
+
+Postgres data lives in the `pgdata` Docker volume and survives rebuilds. Keep `server/.env` and `server/secrets/` in place on the host.
+
+### 4. Smoke-check production
+
+1. Open `https://hoangnhiwedding.run.place/` — intro / hero load.
+2. Open `https://hoangnhiwedding.run.place/?Alex` — invitee name appears.
+3. `POST` an RSVP from the form — toast success; row in Postgres and (if configured) Google Sheet.
+4. Open `https://hoangnhiwedding.run.place/guests/` — new reply listed.
+5. `curl https://hoangnhiwedding.run.place/health` — `{"status":"ok"}`.

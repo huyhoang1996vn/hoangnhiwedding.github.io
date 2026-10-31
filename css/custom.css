@@ -774,6 +774,7 @@ body {
 
 #rsvp #fullName,
 #rsvp #attendees,
+#rsvp #stay,
 #rsvp #message {
   width: 100%;
   max-width: 100%;

@@ -119,6 +119,7 @@ Tạo một lời xác nhận. Trả `201`.
 {
   "fullName": "An Nguyen",
   "attendees": 2,
+  "stay": "Staying at Mikazuki",
   "message": "Chúc hai bạn hạnh phúc",
   "website": ""
 }
@@ -128,6 +129,7 @@ Tạo một lời xác nhận. Trả `201`.
 | --- | --- |
 | `fullName` | Bắt buộc, sau khi trim còn 1–120 ký tự |
 | `attendees` | Số nguyên từ 1 đến 20 |
+| `stay` | Tuỳ chọn, tối đa 1000 ký tự. Chuỗi rỗng được lưu thành `null` |
 | `message` | Tuỳ chọn, tối đa 1000 ký tự. Chuỗi rỗng được lưu thành `null` |
 | `website` | Honeypot. Khách thật để trống. Nếu có nội dung, API trả `201` với `{"id": null}` và không lưu |
 
@@ -146,6 +148,7 @@ Danh sách lời xác nhận, mới nhất trước. Mỗi phần tử:
   "id": 1,
   "fullName": "An Nguyen",
   "attendees": 2,
+  "stay": "Staying at Mikazuki",
   "message": "Chúc hai bạn hạnh phúc",
   "createdAt": "2026-10-23T07:30:00+00:00"
 }
@@ -158,5 +161,6 @@ Danh sách lời xác nhận, mới nhất trước. Mỗi phần tử:
 | `id` | integer, khoá chính |
 | `full_name` | varchar(120), bắt buộc |
 | `attendees` | integer, bắt buộc |
+| `stay` | text, có thể null |
 | `message` | text, có thể null |
 | `created_at` | timestamptz, mặc định `now()` |

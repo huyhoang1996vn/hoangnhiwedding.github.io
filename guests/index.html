@@ -68,7 +68,7 @@
 
       const head = document.createElement('thead');
       const headRow = document.createElement('tr');
-      ['Name', 'Guests', 'Message', 'Sent'].forEach((label) => {
+      ['Name', 'Guests', 'Stay', 'Message', 'Sent'].forEach((label) => {
         const cell = document.createElement('th');
         cell.scope = 'col';
         cell.textContent = label;
@@ -88,6 +88,10 @@
         count.className = 'guest-count';
         count.textContent = String(guest.attendees);
 
+        const stay = document.createElement('td');
+        stay.className = 'guest-note';
+        stay.textContent = guest.stay || '—';
+
         const note = document.createElement('td');
         note.className = 'guest-note';
         note.textContent = guest.message || '—';
@@ -104,7 +108,7 @@
           when.append(dayLine, timeLine);
         }
 
-        row.append(name, count, note, when);
+        row.append(name, count, stay, note, when);
         body.append(row);
       });
 

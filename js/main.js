@@ -183,7 +183,7 @@
         '#our-story',
         '#day-program',
         '#recovery-day',
-        '#gifts',
+        // '#gifts',
         '#rsvp',
         'footer',
       ];
@@ -229,7 +229,7 @@
           'our-story',
           'day-program',
           'recovery-day',
-          'gifts',
+          // 'gifts',
           'rsvp',
         ]);
 
@@ -241,7 +241,7 @@
           const heading = el.querySelector('h2');
           const firstImg = el.querySelector('img');
           let anchor = heading;
-          if ((el.id === 'gifts' || el.id === 'rsvp') && firstImg) {
+          if (el.id === 'rsvp' && firstImg) {
             anchor = firstImg;
           }
           if (!anchor) {
@@ -520,10 +520,17 @@
       const data = new FormData(form);
       const fullName = String(data.get('fullName') || '').trim();
       const attendees = Number(data.get('attendees'));
+      const stay = String(data.get('stay') || '').trim().toLowerCase();
       const message = String(data.get('message') || '').trim();
       const website = String(data.get('website') || '');
 
-      if (!fullName || !Number.isInteger(attendees) || attendees < 1 || attendees > 20) {
+      if (
+        !fullName ||
+        !Number.isInteger(attendees) ||
+        attendees < 1 ||
+        attendees > 20 ||
+        (stay !== 'yes' && stay !== 'no')
+      ) {
         showToast('Please fill in all required fields.', 'error');
         return;
       }
@@ -538,6 +545,7 @@
           body: JSON.stringify({
             fullName,
             attendees,
+            stay,
             message: message || null,
             website,
           }),

@@ -304,7 +304,7 @@ Nhi</p>
           <h2 class="section-heading">Dress Code</h2>
           <span class="section-rule"></span>
           <p class="font-subtitle text-[1.75rem] md:text-[2.5rem] text-sage-dark tracking-[0.02em] mt-4">Black Tie</p>
-          <p class="font-body italic text-sage-dark/70 text-sm md:text-base leading-relaxed max-w-md mx-auto mt-4">The cocktail hour will be held on the gravel terrace and lawn; guests may wish to consider appropriate footwear.</p>
+          <p class="font-body italic text-sage-dark/70 text-sm md:text-base leading-relaxed max-w-md mx-auto mt-4">The teabreak will be held on the gravel terrace and lawn; guests may wish to consider appropriate footwear.</p>
           <img src="assets/dress-code-illustration-v2.webp" alt="" class="w-full max-w-2xl mx-auto mt-8">
         </div>
       </div>
@@ -359,13 +359,13 @@ Nhi</p>
               <img src="assets/timeline-cocktail-v2.png" alt="Painted martini glass with olive" loading="lazy" class="w-full h-auto justify-self-center select-none pointer-events-none max-w-[96px] md:max-w-[130px]">
               <div class="pl-6 md:pl-10">
                 <p class="font-body font-bold tracking-[0.06em] text-lg md:text-2xl text-sage-dark">4:45 PM</p>
-                <p class="font-body text-sage-dark/85 tracking-[0.14em] uppercase text-xs md:text-sm mt-2 leading-relaxed">Cocktail hour</p>
+                <p class="font-body text-sage-dark/85 tracking-[0.14em] uppercase text-xs md:text-sm mt-2 leading-relaxed">Teabreak</p>
               </div>
             </div>
             <div class="relative grid grid-cols-[38%_1fr] md:grid-cols-[40%_1fr] items-center gap-4 md:gap-8 reveal">
               <img src="assets/timeline-disco-v2.png" alt="Painted disco ball with stars" loading="lazy" class="w-full h-auto justify-self-center select-none pointer-events-none max-w-[130px] md:max-w-[180px]">
               <div class="pl-6 md:pl-10">
-                <p class="font-body font-bold tracking-[0.06em] text-lg md:text-2xl text-sage-dark">6:30 PM</p>
+                <p class="font-body font-bold tracking-[0.06em] text-lg md:text-2xl text-sage-dark">6:00 PM</p>
                 <p class="font-body text-sage-dark/85 tracking-[0.14em] uppercase text-xs md:text-sm mt-2 leading-relaxed">Reception and dancing</p>
               </div>
             </div>
@@ -378,7 +378,7 @@ Nhi</p>
             </div>
           </div>
         </div>
-        <p class="text-center text-sage-dark/70 font-body italic text-sm md:text-base leading-relaxed max-w-md mx-auto mt-12 reveal">Our ceremony will take place at Da Nang Mikazuki Japanese Resorts &amp; Spa. This will be followed by a cocktail hour in the rose garden, before dinner and dancing in the old wine cellar.</p>
+        <!-- <p class="text-center text-sage-dark/70 font-body italic text-sm md:text-base leading-relaxed max-w-md mx-auto mt-12 reveal">Our ceremony will take place at Da Nang Mikazuki Japanese Resorts &amp; Spa. This will be followed by a cocktail hour in the rose garden, before dinner and dancing in the old wine cellar.</p> -->
       </div>
     </section>
 
@@ -428,7 +428,7 @@ Nhi</p>
       </div>
     </section>
 
-    <!-- Gifts -->
+    <!-- Gifts
     <section id="gifts" class="relative overflow-hidden bg-ivory">
       <div class="relative z-10 pt-10 md:pt-16 pb-0">
         <div class="relative w-full reveal">
@@ -441,6 +441,7 @@ Nhi</p>
         </div>
       </div>
     </section>
+    -->
 
     <!-- RSVP -->
     <section id="rsvp" class="section-padding bg-ivory py-16 md:py-20 pt-[4px]">
@@ -471,6 +472,20 @@ Nhi</p>
               <label class="text-sm leading-none text-sage-dark font-medium" for="attendees">Number of attendees *</label>
               <input class="flex h-10 w-full rounded-md border px-3 py-2 text-base md:text-sm mt-2 bg-ivory border-sage-dark/30 text-sage-dark placeholder:text-sage-dark/50 focus:border-sage-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" id="attendees" name="attendees" type="number" inputmode="numeric" min="1" max="20" value="1" required placeholder="1">
             </div>
+
+            <fieldset>
+              <legend class="text-sm leading-none text-sage-dark font-medium">We care about your stay in Da Nang *</legend>
+              <div class="mt-3 flex gap-8">
+                <label class="inline-flex items-center gap-2 text-sm text-sage-dark cursor-pointer" for="stay-yes">
+                  <input class="h-4 w-4 accent-sage-dark" type="radio" id="stay-yes" name="stay" value="yes" required>
+                  Yes
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm text-sage-dark cursor-pointer" for="stay-no">
+                  <input class="h-4 w-4 accent-sage-dark" type="radio" id="stay-no" name="stay" value="no" required>
+                  No
+                </label>
+              </div>
+            </fieldset>
 
             <div class="relative">
               <label class="text-sm leading-none text-sage-dark font-medium" for="message">Message</label>

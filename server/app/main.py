@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -14,9 +15,18 @@ from app.sheets import append_rsvp
 logger = logging.getLogger(__name__)
 
 
+def ensure_schema() -> None:
+    Base.metadata.create_all(bind=engine)
+    # create_all does not add columns to existing tables
+    with engine.begin() as conn:
+        conn.execute(
+            text("ALTER TABLE rsvps ADD COLUMN IF NOT EXISTS stay TEXT")
+        )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    ensure_schema()
     yield
 
 
@@ -42,6 +52,7 @@ def create_rsvp(payload: RsvpCreate, db: Session = Depends(get_db)) -> RsvpOut:
     row = Rsvp(
         full_name=payload.full_name,
         attendees=payload.attendees,
+        stay=payload.stay,
         message=payload.message,
     )
     db.add(row)

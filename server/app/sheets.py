@@ -26,7 +26,7 @@ def append_rsvp(row: Rsvp) -> None:
         client.http_client.timeout = 20
     sheet = client.open_by_key(settings.google_sheet_id).worksheet(settings.google_sheet_tab)
     sheet.append_row(
-        [row.id, row.full_name, row.attendees, row.message or "", created],
+        [row.id, row.full_name, row.attendees, row.stay or "", row.message or "", created],
         value_input_option="USER_ENTERED",
     )
     logger.info("Appended rsvp %s to Google Sheet", row.id)

@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 class RsvpCreate(BaseModel):
     full_name: str = Field(alias="fullName", min_length=1, max_length=120)
     attendees: int = Field(ge=1, le=20)
+    stay: str | None = Field(default=None, max_length=1000)
     message: str | None = Field(default=None, max_length=1000)
     website: str | None = None
 
@@ -18,9 +19,9 @@ class RsvpCreate(BaseModel):
             return value.strip()
         return value
 
-    @field_validator("message", mode="before")
+    @field_validator("stay", "message", mode="before")
     @classmethod
-    def empty_message_is_none(cls, value: str | None) -> str | None:
+    def empty_text_is_none(cls, value: str | None) -> str | None:
         if value is None:
             return None
         if isinstance(value, str):
@@ -37,6 +38,7 @@ class RsvpGuest(BaseModel):
     id: int
     full_name: str = Field(serialization_alias="fullName")
     attendees: int
+    stay: str | None = None
     message: str | None
     created_at: datetime = Field(serialization_alias="createdAt")
 
