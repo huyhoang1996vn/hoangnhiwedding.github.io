@@ -679,6 +679,13 @@ body {
    7. SECTION: DRESS CODE  (#dress-code)
    ========================================================================= */
 
+.dress-code-copy {
+  text-align: center;
+  max-width: 36rem;            /* max-w-xl */
+  margin-inline: auto;
+  padding-top: 45px;
+}
+
 /* --- Typography (ghi đè Tailwind inline nếu cần) --- */
 /* Ví dụ:
 #dress-code h2 { font-size: 32px; }       // "Dress Code"
