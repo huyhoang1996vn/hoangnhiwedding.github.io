@@ -79,7 +79,8 @@ Trong Docker, host của database là `db`, không phải `localhost`.
 | `CORS_ORIGINS` | Danh sách origin được phép, phân tách bằng dấu phẩy |
 | `GOOGLE_SHEET_ID` | ID spreadsheet (đoạn trong URL `/d/.../edit`) |
 | `GOOGLE_SHEET_TAB` | Tên tab, mặc định `RSVP` |
-| `GOOGLE_CREDENTIALS_FILE` | Đường dẫn file JSON service account, ví dụ `secrets/service-account.json` |
+| `GOOGLE_CREDENTIALS_FILE` | Đường dẫn file JSON service account **trong container**, ví dụ `secrets/service-account.json` |
+| `SECRETS_HOST_PATH` | Thư mục trên host mount vào `/app/secrets` (mặc định `./secrets`). Trên VPS dùng Snap Docker phải trỏ vào đường dẫn dưới `$HOME` (ví dụ `/root/hoangnhi-wedding-secrets`) vì Snap không mount được `/var/www` |
 
 `CORS_ORIGINS` mặc định cho Live Server: `http://127.0.0.1:5500` và `http://localhost:5500`. Thêm origin thật (domain thiệp, URL ngrok) nếu mở site từ chỗ khác. Thiệp gọi `http://127.0.0.1:8000/rsvp` và trang khách gọi `http://127.0.0.1:8000/rsvps`.
 
@@ -119,7 +120,7 @@ Tạo một lời xác nhận. Trả `201`.
 {
   "fullName": "An Nguyen",
   "attendees": 2,
-  "stay": "Staying at Mikazuki",
+  "stay": "yes",
   "message": "Chúc hai bạn hạnh phúc",
   "website": ""
 }
@@ -129,7 +130,7 @@ Tạo một lời xác nhận. Trả `201`.
 | --- | --- |
 | `fullName` | Bắt buộc, sau khi trim còn 1–120 ký tự |
 | `attendees` | Số nguyên từ 1 đến 20 |
-| `stay` | Tuỳ chọn, tối đa 1000 ký tự. Chuỗi rỗng được lưu thành `null` |
+| `stay` | Bắt buộc: `"yes"` hoặc `"no"` |
 | `message` | Tuỳ chọn, tối đa 1000 ký tự. Chuỗi rỗng được lưu thành `null` |
 | `website` | Honeypot. Khách thật để trống. Nếu có nội dung, API trả `201` với `{"id": null}` và không lưu |
 
@@ -148,7 +149,7 @@ Danh sách lời xác nhận, mới nhất trước. Mỗi phần tử:
   "id": 1,
   "fullName": "An Nguyen",
   "attendees": 2,
-  "stay": "Staying at Mikazuki",
+  "stay": "yes",
   "message": "Chúc hai bạn hạnh phúc",
   "createdAt": "2026-10-23T07:30:00+00:00"
 }
@@ -161,6 +162,6 @@ Danh sách lời xác nhận, mới nhất trước. Mỗi phần tử:
 | `id` | integer, khoá chính |
 | `full_name` | varchar(120), bắt buộc |
 | `attendees` | integer, bắt buộc |
-| `stay` | text, có thể null |
+| `stay` | text, bắt buộc `"yes"` / `"no"` trên API tạo mới |
 | `message` | text, có thể null |
 | `created_at` | timestamptz, mặc định `now()` |

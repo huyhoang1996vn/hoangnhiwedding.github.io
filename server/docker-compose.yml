@@ -24,7 +24,9 @@ services:
       GOOGLE_SHEET_TAB: ${GOOGLE_SHEET_TAB:-RSVP}
       GOOGLE_CREDENTIALS_FILE: ${GOOGLE_CREDENTIALS_FILE:-}
     volumes:
-      - ./secrets:/app/secrets:ro
+      # Snap Docker cannot bind-mount /var/www (read-only confinement).
+      # On this host set SECRETS_HOST_PATH to a path under $HOME (see .env).
+      - ${SECRETS_HOST_PATH:-./secrets}:/app/secrets:ro
     depends_on:
       db:
         condition: service_healthy
