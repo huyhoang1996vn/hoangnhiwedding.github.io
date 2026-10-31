@@ -225,6 +225,8 @@ body {
   padding: 3px 0 1px;
 }
 
+/* Digits use cursive; surrounding words keep their own font */
+
 
 /* =========================================================================
    2. SECTION: INTRO VIDEO  (#intro-section)
@@ -302,7 +304,7 @@ body {
 /* --- "Tap to open" hint --- */
 .intro-play-hint {
   position: absolute;
-  bottom: 40px;
+  bottom: 120px;
   left: 0;
   right: 0;
   z-index: 20;
@@ -312,7 +314,7 @@ body {
   color: white;
   transition: opacity 0.5s ease, visibility 0.5s ease;
   animation: intro-tap-pulse 2.4s ease-in-out infinite;
-  font-size: 17px;            /* <-- cỡ chữ "Tap to open" */
+  font-size: 27px;            /* <-- cỡ chữ "Tap to open" */
 }
 
 .intro-play-hint.is-hidden {
@@ -778,6 +780,11 @@ body {
 #rsvp #message {
   width: 100%;
   max-width: 100%;
+}
+
+#rsvp #attendees {
+  font-family: cursive;
+  font-weight: 100;
 }
 
 #rsvp #message {

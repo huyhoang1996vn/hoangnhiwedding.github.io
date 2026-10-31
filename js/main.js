@@ -481,6 +481,21 @@
     return parts.length ? parts : [name];
   }
 
+  function appendTextWithNumSpans(parent, text) {
+    const parts = String(text).split(/(\d+)/);
+    parts.forEach((part) => {
+      if (!part) return;
+      if (/^\d+$/.test(part)) {
+        const num = document.createElement('span');
+        num.className = 'font-num';
+        num.textContent = part;
+        parent.appendChild(num);
+      } else {
+        parent.appendChild(document.createTextNode(part));
+      }
+    });
+  }
+
   function renderInviteeNames(container, name) {
     if (!container) return;
     container.textContent = '';
@@ -493,7 +508,7 @@
       }
       const heading = document.createElement('h3');
       heading.className = 'invitee-name';
-      heading.textContent = person;
+      appendTextWithNumSpans(heading, person);
       container.appendChild(heading);
     });
   }
@@ -520,17 +535,12 @@
       const data = new FormData(form);
       const fullName = String(data.get('fullName') || '').trim();
       const attendees = Number(data.get('attendees'));
-      const stay = String(data.get('stay') || '').trim().toLowerCase();
+      const stayRaw = String(data.get('stay') || '').trim().toLowerCase();
+      const stay = stayRaw === 'yes' || stayRaw === 'no' ? stayRaw : 'no';
       const message = String(data.get('message') || '').trim();
       const website = String(data.get('website') || '');
 
-      if (
-        !fullName ||
-        !Number.isInteger(attendees) ||
-        attendees < 1 ||
-        attendees > 20 ||
-        (stay !== 'yes' && stay !== 'no')
-      ) {
+      if (!fullName || !Number.isInteger(attendees) || attendees < 1 || attendees > 20) {
         showToast('Please fill in all required fields.', 'error');
         return;
       }
