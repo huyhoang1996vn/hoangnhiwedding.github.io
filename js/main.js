@@ -18,6 +18,99 @@
     end: '20270109T230000',
   };
 
+  const UI = {
+    vi: {
+      and: 'và',
+      toggle: 'English',
+      title: 'Hoang & Nhi | 9 tháng 1 năm 2027',
+      description: 'Mời bạn đến với Hoang & Nhi, Thứ Bảy 9 tháng 1 năm 2027. Thông tin, chương trình và RSVP.',
+      toastRequired: 'Vui lòng điền các mục bắt buộc.',
+      toastError: 'Đã có lỗi. Vui lòng thử lại.',
+      toastSuccess: 'Cảm ơn bạn! Chúng mình đã nhận lời phản hồi.',
+      calendarConfirm: 'Thêm vào Google Calendar trên trình duyệt, hoặc tải file .ics?\n\nOK = Google Calendar\nHủy = Tải file .ics',
+      musicPlay: 'Bật nhạc nền',
+      musicMute: 'Tắt nhạc nền',
+      namePlaceholder: 'Nhập tên của bạn',
+      messagePlaceholder: 'Gửi một lời chúc, một kỷ niệm, hoặc điều bạn muốn chúng mình đọc…',
+      heroAria: 'Thiệp cưới Hoang và Nhi',
+      calendarAria: 'Tháng 1 năm 2027',
+    },
+    en: {
+      and: 'and',
+      toggle: 'Tiếng Việt',
+      title: 'Hoang & Nhi | 9 January 2027',
+      description: 'Join Hoang & Nhi on Saturday 9 January 2027. Details, timeline and RSVP.',
+      toastRequired: 'Please fill in all required fields.',
+      toastError: 'Something went wrong. Please try again.',
+      toastSuccess: 'Thank you! Your RSVP has been received.',
+      calendarConfirm: 'Add to Google Calendar in browser, or download .ics file?\n\nOK = Google Calendar\nCancel = Download .ics',
+      musicPlay: 'Play background music',
+      musicMute: 'Mute background music',
+      namePlaceholder: 'Enter your name',
+      messagePlaceholder: "Share a wish, a memory, or anything you'd like us to read…",
+      heroAria: 'Hoang and Nhi wedding invitation',
+      calendarAria: 'January 2027',
+    },
+  };
+
+  let lang = 'en';
+
+  function applyLang(next) {
+    lang = next === 'en' ? 'en' : 'vi';
+    const copy = UI[lang];
+    document.documentElement.lang = lang;
+
+    const toggle = document.getElementById('lang-toggle');
+    if (toggle) toggle.textContent = copy.toggle;
+
+    document.title = copy.title;
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', copy.description);
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', copy.title);
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', copy.description);
+
+    document.querySelectorAll('.invitee-and').forEach((el) => {
+      el.textContent = copy.and;
+    });
+
+    const hero = document.getElementById('hero-invitation');
+    if (hero) hero.setAttribute('aria-label', copy.heroAria);
+    const calendar = document.querySelector('.countdown-calendar');
+    if (calendar) calendar.setAttribute('aria-label', copy.calendarAria);
+
+    const nameInput = document.getElementById('fullName');
+    if (nameInput) nameInput.placeholder = copy.namePlaceholder;
+    const messageInput = document.getElementById('message');
+    if (messageInput) messageInput.placeholder = copy.messagePlaceholder;
+
+    const musicBtn = document.getElementById('music-toggle');
+    if (musicBtn) {
+      const muted = musicBtn.classList.contains('is-muted');
+      musicBtn.setAttribute('aria-label', muted ? copy.musicPlay : copy.musicMute);
+    }
+  }
+
+  function initLangToggle() {
+    const toggle = document.getElementById('lang-toggle');
+    if (!toggle) return;
+
+    function switchLang(event) {
+      if (event) event.stopPropagation();
+      applyLang(lang === 'vi' ? 'en' : 'vi');
+    }
+
+    toggle.addEventListener('click', switchLang);
+    toggle.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      switchLang(event);
+    });
+
+    applyLang('en');
+  }
+
   function pad(n) {
     return String(n).padStart(2, '0');
   }
@@ -400,7 +493,7 @@
         const key = btn.getAttribute('data-calendar');
         const event = key === 'recovery' ? RECOVERY : CEREMONY;
         const filename = key === 'recovery' ? 'recovery-day.ics' : 'wedding-day.ics';
-        if (window.confirm('Add to Google Calendar in browser, or download .ics file?\n\nOK = Google Calendar\nCancel = Download .ics')) {
+        if (window.confirm(UI[lang].calendarConfirm)) {
           window.open(buildCalendarUrl(event), '_blank', 'noopener,noreferrer');
         } else {
           downloadIcs(event, filename);
@@ -437,7 +530,7 @@
       btn.setAttribute('aria-pressed', String(!userMuted));
       btn.setAttribute(
         'aria-label',
-        userMuted ? 'Play background music' : 'Mute background music'
+        userMuted ? UI[lang].musicPlay : UI[lang].musicMute
       );
     }
 
@@ -503,7 +596,7 @@
       if (index > 0) {
         const and = document.createElement('p');
         and.className = 'invitee-and';
-        and.textContent = 'and';
+        and.textContent = UI[lang].and;
         container.appendChild(and);
       }
       const heading = document.createElement('h3');
@@ -541,7 +634,7 @@
       const website = String(data.get('website') || '');
 
       if (!fullName || !Number.isInteger(attendees) || attendees < 1 || attendees > 20) {
-        showToast('Please fill in all required fields.', 'error');
+        showToast(UI[lang].toastRequired, 'error');
         return;
       }
 
@@ -562,22 +655,23 @@
         });
 
         if (!response.ok) {
-          showToast('Something went wrong. Please try again.', 'error');
+          showToast(UI[lang].toastError, 'error');
           return;
         }
 
-        showToast('Thank you! Your RSVP has been received.', 'success');
+        showToast(UI[lang].toastSuccess, 'success');
         form.reset();
         const attendeesInput = form.querySelector('#attendees');
         if (attendeesInput) attendeesInput.value = '1';
       } catch (err) {
-        showToast('Something went wrong. Please try again.', 'error');
+        showToast(UI[lang].toastError, 'error');
       } finally {
         if (button) button.disabled = false;
       }
     });
   }
 
+  initLangToggle();
   initInvitee();
   initRsvpForm();
   updateCountdown();
