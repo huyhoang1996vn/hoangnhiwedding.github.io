@@ -26,6 +26,23 @@
   color: hsl(var(--gold) / 0.4);
 }
 
+/* Font bản tiếng Việt. Sửa đúng dòng --font-vi.
+   Tên phải trùng font đang tải trong index.html.
+   EB Garamond      — serif cổ điển, gần Caslon (đang dùng)
+   Cormorant Garamond — thanh, giống tiêu đề thiệp
+   Source Serif 4   — serif hiện đại, dễ đọc trên điện thoại
+   Crimson Pro      — serif sách, nét vừa */
+html[lang="vi"] {
+  --font-vi: "EB Garamond", serif;
+  --font-body: var(--font-vi);
+  --font-display: var(--font-vi);
+  --font-subtitle: var(--font-vi);
+}
+
+html[lang="vi"] .font-subtitle {
+  font-family: var(--font-vi);
+}
+
 /* --- Page background + phone-column shell --- */
 body {
   background-color: hsl(var(--ivory));
@@ -200,6 +217,27 @@ body {
 .music-toggle.is-muted .music-icon-on { display: none; }
 .music-toggle.is-muted .music-icon-off { display: block; }
 
+/* --- Language toggle: ô góc trên trái của cánh cửa. Không gán font mới. --- */
+.lang-toggle {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  z-index: 30;
+  margin: 0;
+  padding: 0;
+  color: rgba(247, 243, 234, 0.92);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+html[lang="vi"] .lang-en { display: none; }
+html[lang="en"] .lang-vi { display: none; }
+
 /* --- Base styles cho tên khách (dùng chung hero + welcome) --- */
 .invitee-names {
   container-type: inline-size;
@@ -337,14 +375,21 @@ body {
 .hero-invite {
   max-width: 100%;
   top: 50%;                   /* <-- lệch khung lên/xuống: đổi 50% thành 48%/52%... */
+  left: 26%;                  /* <-- mép chữ so với khung. Tăng nếu chữ đè hoa hai bên */
+  right: 26%;
   transform: translateY(-50%);
+}
+
+#hero-invitation .hero-invite p {
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 /* --- Typography: cỡ chữ 4 dòng trong khung (chỉnh ở đây) --- */
 
-/* Dòng 1: "We warmly invite" — mobile; desktop khôi phục bên dưới */
-#hero-invitation .hero-invite > p:first-child {
-  font-size: 20px;
+/* Dòng 1: "Trân trọng kính mời" — mobile; desktop khôi phục bên dưới */
+#hero-invitation .hero-invite > p.font-body {
+  font-size: 18px;
   line-height: 1.625;
 }
 
@@ -357,9 +402,9 @@ body {
   font-size: 24px;                       /* <-- cỡ chữ "and" (mobile) */
 }
 
-/* Dòng 5: "To join us in celebrating our special day" */
+/* Dòng 5: "Đến chung vui ngày trọng đại của chúng mình" */
 #hero-invitation .hero-invite > div:last-child > p:nth-child(1) {
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.625;
 }
 
@@ -371,7 +416,7 @@ body {
 
 /* Desktop giữ nguyên cỡ chữ trước khi hạ mobile */
 @media (min-width: 768px) {
-  #hero-invitation .hero-invite > p:first-child                   { font-size: 24px; }
+  #hero-invitation .hero-invite > p.font-body                   { font-size: 24px; }
   .hero-invite .invitee-name                                      { font-size: clamp(64px, 16cqi, 64px); }
   .hero-invite .invitee-and                                       { font-size: clamp(27px, 9cqi, 34px); }
   #hero-invitation .hero-invite > div:last-child > p:nth-child(1) { font-size: 24px; }
@@ -729,6 +774,16 @@ body {
     transparent 4px,
     transparent 12px
   );
+}
+
+/* Icon camera mốc 16:45. Sửa hai số này để đổi cỡ: mobile, rồi màn từ 768px. */
+.timeline-camera {
+  max-width: 106px;
+}
+@media (min-width: 768px) {
+  .timeline-camera {
+    max-width: 140px;
+  }
 }
 
 /* --- Typography (ghi đè Tailwind inline nếu cần) --- */
