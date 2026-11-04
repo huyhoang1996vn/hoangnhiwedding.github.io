@@ -217,15 +217,15 @@ body {
 .music-toggle.is-muted .music-icon-on { display: none; }
 .music-toggle.is-muted .music-icon-off { display: block; }
 
-/* --- Language toggle: ô góc trên trái của cánh cửa. Không gán font mới. --- */
+/* --- Language toggle: chữ gạch chân góc trên trái của khung thiệp, cố định khi cuộn --- */
 .lang-toggle {
-  position: absolute;
+  position: fixed;
   top: 16px;
-  left: 18px;
-  z-index: 30;
+  left: max(18px, calc(50% - 280px + 18px)); /* 280px = nửa bề rộng khung 560px */
+  z-index: 200;
   margin: 0;
   padding: 0;
-  color: rgba(247, 243, 234, 0.92);
+  color: hsl(var(--sage-dark));
   font-family: inherit;
   font-size: 13px;
   line-height: 1.2;
